@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 int main(int argc, char **argv) {
-  ros::init(argc, argv, "~");
+  ros::init(argc, argv, "roboteq_usb_driver");
   ros::NodeHandle nh("~");
 
   std::string port = "/dev/ttyUSB0";
