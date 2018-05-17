@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
     if (controller.connected()) {
       ros::AsyncSpinner spinner(1);
       spinner.start();
-      while (ros::ok()) {
+      while (controller.connected()) { // Try to reconnect on disconnection
         controller.spinOnce();
       }
       spinner.stop();
