@@ -31,20 +31,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "roboteq_usb_driver");
-  ros::NodeHandle nh("~");
+  ros::NodeHandle pnh("~"); // Private node handle
 
   std::string port = "/dev/ttyUSB0";
   int32_t baud = 115200;
-  nh.param<std::string>("port", port, port);
-  nh.param<int32_t>("baud", baud, baud);
+  pnh.param<std::string>("port", port, port);
+  pnh.param<int32_t>("baud", baud, baud);
 
   // Interface to motor controller.
   roboteq::Controller controller(port.c_str(), baud);
 
   // Setup channels.
-  if (nh.hasParam("channels")) {
+  if (pnh.hasParam("channels")) {
     XmlRpc::XmlRpcValue channel_namespaces;
-    nh.getParam("channels", channel_namespaces);
+    pnh.getParam("channels", channel_namespaces);
     ROS_ASSERT(channel_namespaces.getType() == XmlRpc::XmlRpcValue::TypeArray);
     for (int i = 0; i < channel_namespaces.size(); ++i) 
     {
