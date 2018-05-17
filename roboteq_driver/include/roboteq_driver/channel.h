@@ -73,15 +73,15 @@ protected:
   }
 
   /**
-   * Conversion of encoder ticks to radians. Note that this assumes a
+   * Conversion of encoder ticks to radians. Default is assumess a
    * 1024-line quadrature encoder (hence 4096).
    *
    * @param x Angular position in encoder ticks.
    * @return Angular position in radians.
    */
-  static double from_encoder_ticks(double x)
+  double from_encoder_ticks(double x)
   {
-    return x * (2 * M_PI) / 4096;
+    return x * (2 * M_PI) / ticks_per_rotation_;
   }
 
   void cmdCallback(const roboteq_msgs::Command&);
