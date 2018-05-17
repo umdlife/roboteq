@@ -38,7 +38,7 @@ class Controller;
 
 class Channel {
 public:
-  Channel(int channel_num, std::string ns, Controller* controller);
+  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=4096);
   void feedbackCallback(std::vector<std::string>);
 
 protected:
@@ -61,15 +61,15 @@ protected:
   }
 
   /**
-   * Conversion of radians to encoder ticks. Note that this assumes a
+   * Conversion of radians to encoder ticks. Default is assumess a
    * 1024-line quadrature encoder (hence 4096).
    *
    * @param x Angular position in radians.
    * @return Angular position in encoder ticks.
    */
-  static double to_encoder_ticks(double x)
+  double to_encoder_ticks(double x)
   {
-    return x * 4096 / (2 * M_PI);
+    return x * ticks_per_rotation_ / (2 * M_PI);
   }
 
   /**
@@ -91,6 +91,7 @@ protected:
   boost::shared_ptr<Controller> controller_;
   int channel_num_;
   float max_rpm_;
+  int ticks_per_rotation_;
 
   ros::Subscriber sub_cmd_;
   ros::Publisher pub_feedback_;

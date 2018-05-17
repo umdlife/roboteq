@@ -28,6 +28,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ros/ros.h"
 
+#include <sstream>
+#include <string>
+#include <iostream>
+
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "roboteq_usb_driver");
@@ -45,15 +49,47 @@ int main(int argc, char **argv) {
   if (pnh.hasParam("channels")) {
     XmlRpc::XmlRpcValue channel_namespaces;
     pnh.getParam("channels", channel_namespaces);
+    // Config of channels is an array
     ROS_ASSERT(channel_namespaces.getType() == XmlRpc::XmlRpcValue::TypeArray);
     for (int i = 0; i < channel_namespaces.size(); ++i) 
     {
-      ROS_ASSERT(channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeString);
-      controller.addChannel(new roboteq::Channel(1 + i, channel_namespaces[i], &controller));
+      int encoder_ticks = 4096;
+      std::ostringstream ss;
+      // Handle string only = name with 4096 ticks/rotation
+      if (channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeString) {
+        ss << channel_namespaces[i];
+      }
+
+      // Handle dict with optional encoder_ticks
+      else if(channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeStruct) {
+        // set encoder ticks with default of 4096 ticks per rotation
+        if (channel_namespaces[i].hasMember("encoder_ticks")) {
+          if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeInt)
+            encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
+          else if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
+            encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
+        }
+        // set name which has to be a string. Else: MotorID
+        if (channel_namespaces[i].hasMember("name")) {
+          if (channel_namespaces[i]["name"].getType() == XmlRpc::XmlRpcValue::TypeString)
+            ss << channel_namespaces[i]["name"];
+          else {
+            ss << "motor" <<  (i+1);
+            ROS_ERROR_STREAM("Channel array using Dict requires a name for the controller; default to motor" << i+1);
+          }
+        }
+        
+      } else {
+        ss << "motor" <<  (i+1);
+        ROS_ERROR_STREAM("Channel array has to be either a dict or a string. default to motor" << i+1);
+      }
+      ROS_DEBUG_STREAM("Setting channel " << ss.str() << " with encoders: " << encoder_ticks);
+      controller.addChannel(new roboteq::Channel(1 + i, ss.str(), &controller, encoder_ticks));
     }
   } else {
     // Default configuration is a single channel in the node's namespace.
-    controller.addChannel(new roboteq::Channel(1, "~", &controller));
+    ROS_DEBUG_STREAM("Channels not set: Using default motor1 with 4096 ticks");
+    controller.addChannel(new roboteq::Channel(1, "motor1", &controller));
   } 
 
   // Attempt to connect and run.

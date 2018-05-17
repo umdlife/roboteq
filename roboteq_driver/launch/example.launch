@@ -5,8 +5,10 @@
     <param name="baud" value="115200" />
     <rosparam>
       channels:
-        - left
-        - right
+        - name: left
+          encoder_ticks: 256
+        - name: right
+          encoder_ticks: 256
     </rosparam>
   </node>
 </launch>

@@ -33,9 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace roboteq {
 
-Channel::Channel(int channel_num, std::string ns, Controller* controller) :
+Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation) :
   channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3500),
-  last_mode_(255)
+  last_mode_(255), ticks_per_rotation_(ticks_per_rotation)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
