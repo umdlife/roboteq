@@ -56,15 +56,21 @@ void Channel::cmdCallback(const roboteq_msgs::Command& command)
   // lost message, and the MBS script keeps track of changes and updates the control
   // constants accordingly.
   controller_->command << "VAR" << channel_num_ << static_cast<int>(command.mode) << controller_->send;
+  if (command.mode == roboteq_msgs::Command::MODE_STOPPED)
+  {
+    // Get a -1000 .. 1000 command as a proportion of the maximum RPM.
+    int roboteq_velocity = to_rpm(command.setpoint) / max_rpm_ * 1000.0;
+    ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " STOP to motor driver.");
 
+  }
   if (command.mode == roboteq_msgs::Command::MODE_VELOCITY)
   {
     // Get a -1000 .. 1000 command as a proportion of the maximum RPM.
     int roboteq_velocity = to_rpm(command.setpoint) / max_rpm_ * 1000.0;
-    ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " velocity to motor driver.");
+   ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " velocity to motor driver.");
 
     // Write mode and command to the motor driver.
-    controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
+    controller_->command << "GO" << channel_num_ << roboteq_velocity << controller_->send;
   }
   else if (command.mode == roboteq_msgs::Command::MODE_POSITION)
   {

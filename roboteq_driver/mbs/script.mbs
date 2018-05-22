@@ -15,7 +15,7 @@ setcommand(_VAR, 1, -1)
 ' Motor controller configuration. Much of this is particular to Grizzly
 ' and can be generalized/parameterized as the need arises. Page numbers
 ' are a reference to this document:
-' www.roboteq.com/index.php/docman/motor-controllers-documents-and-files/documentation/user-manual/7-nextgen-controllers-user-manual/file
+' www.roboteq.com/index.php/docman/motor-controllers-documents-and-files/documentation/user-manual/	7-nextgen-controllers-user-manual/file
 
 setconfig(_ECHOF, 1) ' Serial echo off (p195)
 setconfig(_RWD, 110) ' Watchdog timeout, milliseconds (p195)
@@ -34,14 +34,14 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	setconfig(_CLERD, ch, 0) ' Closed Loop error detection
 
 	' Current limit (p216)
-	setconfig(_ALIM, ch, 1500) ' Motor Amps Limit
-	setconfig(_ATGA, ch, 2000) ' Amps Trigger Action
-	setconfig(_ATGD, ch, 50) ' Amps Trigger Delay
-	setconfig(_ATRIG, ch, 0) ' Amps Trigger Value
+	setconfig(_ALIM, ch, 100) ' Motor Amps Limit
+	setconfig(_ATGA, ch, 0) ' Amps Trigger Action
+	setconfig(_ATGD, ch, 100) ' Amps Trigger Delay
+	setconfig(_ATRIG, ch, 50) ' Amps Trigger Value
 
 	' Max acceleration/deceleration (p219)
-	setconfig(_MAC, ch, 20000) ' Motor(s) Desired Acceleration
-	setconfig(_MDEC, ch, 20000) ' Motor(s) Desired Deceleration
+	setconfig(_MAC, ch, 30000) ' Motor(s) Desired Acceleration
+	setconfig(_MDEC, ch, 60000) ' Motor(s) Desired Deceleration
 next
 
 top:
