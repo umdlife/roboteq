@@ -1,4 +1,4 @@
-SCRIPT_VER=29
+SCRIPT_VER=1
 
 MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
@@ -28,56 +28,33 @@ setconfig(_UVL, 220)
 
 for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	' Encoder, speed config (p208, p221)
-	setconfig(_EMOD, ch, 50) ' Encoder mode
-	setconfig(_EPPR, ch, 256) ' PulsePerRotation
+	setconfig(_BLFB, ch, 1) ' Select Hall sensor feedback
+	setconfig(_BPOL, ch, 4) ' Set number of poles
+	setconfig(_MDIR, ch, 0) ' Set direction to direct
+	setconfig(_BMOD, ch, 0) ' Set Switching mode to Trapezoidal
 	setconfig(_MXRPM, ch, 3000) ' Maximal Rotation
 	setconfig(_CLERD, ch, 0) ' Closed Loop error detection
-
-	' Current limit (p216)
-	setconfig(_ALIM, ch, 100) ' Motor Amps Limit
-	setconfig(_ATGA, ch, 0) ' Amps Trigger Action
-	setconfig(_ATGD, ch, 100) ' Amps Trigger Delay
-	setconfig(_ATRIG, ch, 50) ' Amps Trigger Value
 
 	' Max acceleration/deceleration (p219)
 	setconfig(_MAC, ch, 30000) ' Motor(s) Desired Acceleration
 	setconfig(_MDEC, ch, 60000) ' Motor(s) Desired Deceleration
+
+	' PID Config and Closed velocity control loop
+	setconfig(_MMOD, ch, 1)
+	setconfig(_KP, ch, 0)
+	setconfig(_KI, ch, 10)
+	setconfig(_KD, ch, 0)
+	setconfig(_ICAP, ch, 100)
+
+	' Current limit (p216)
+	setconfig(_ALIM, ch, 300) ' Motor Amps Limit
+	setconfig(_ATGA, ch, 0) ' Amps Trigger Action
+	setconfig(_ATGD, ch, 200) ' Amps Trigger Delay
+	setconfig(_ATRIG, ch, 110) ' Amps Trigger Value
 next
 
 top:
 	for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
-		if last_mode[ch - 1] <> getvalue(_VAR, ch) then
-			last_mode[ch - 1] = getvalue(_VAR, ch)
-
-			' Motor to be stopped (high-Z).
-			if getvalue(_VAR, ch) = -1 then
-				setconfig(_MMOD, ch, 1)
-				setconfig(_KP, ch, 0)
-				setconfig(_KI, ch, 0)
-				setconfig(_KD, ch, 0)
-				setconfig(_ICAP, ch, 0)
-				setcommand(_G, ch, 0)
-			end if
-
-			' Motor in velocity-control mode.
-			if getvalue(_VAR, ch) = 0 then
-				setconfig(_MMOD, ch, 1)
-				setconfig(_KP, ch, 20)
-				setconfig(_KI, ch, 40)
-				setconfig(_KD, ch, 10)
-				setconfig(_ICAP, ch, 100)
-			end if
-
-			' Motor in position-control mode.
-			if getvalue(_VAR, ch) = 1 then
-				setconfig(_MMOD, ch, 3)
-				setconfig(_KP, ch, 2)
-				setconfig(_KI, ch, 0)
-				setconfig(_KD, ch, 0)
-				setconfig(_ICAP, ch, 0)
-			end if
-		end if
-		
 		' Send feedback for this channel at 25Hz.
 		GoSub PrintFeedback
 	next
