@@ -22,10 +22,6 @@ setconfig(_RWD, 110) ' Watchdog timeout, milliseconds (p195)
 setconfig(_AMOD, 1, 1) ' Analog input 1 absolute mode
 setconfig(_AMOD, 2, 1) ' Analog input 2 absolute mode
 
-' Undervoltage/overvoltage limits (p214)
-setconfig(_OVL, 260) ' 22V to 26V
-setconfig(_UVL, 220)
-
 for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	' Encoder, speed config (p208, p221)
 	setconfig(_BLFB, ch, 1) ' Select Hall sensor feedback
@@ -53,6 +49,10 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	setconfig(_ATRIG, ch, 110) ' Amps Trigger Value
 next
 
+' Undervoltage/overvoltage limits (p214)
+setconfig(_OVL, 260) ' 22V to 26V
+setconfig(_UVL, 220) 
+
 top:
 	for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 		' Send feedback for this channel at 25Hz.
@@ -74,8 +74,8 @@ PrintFeedback:
 	print(":", getvalue(_MOTAMPS, ch))
 	print(":", getvalue(_MOTCMD, ch))
 	print(":", getvalue(_MOTPWR, ch))
-	print(":", getvalue(_ABSPEED, ch))
-	print(":", getvalue(_ABCNTR, ch))
+	print(":", getvalue(_BLSPEED, ch))
+	print(":", getvalue(_BLCNTR, ch))
 	print(":", getvalue(_VOLTS, 2))
 	print(":", getvalue(_BATAMPS, ch))
 	print(":", getvalue(_ANAIN, ch))

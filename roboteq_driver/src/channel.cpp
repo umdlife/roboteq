@@ -28,14 +28,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ros/ros.h"
 #include "roboteq_msgs/Feedback.h"
-#include "roboteq_msgs/Command.h"
 
 
 namespace roboteq {
 
 Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation) :
   channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3500),
-  last_mode_(255), ticks_per_rotation_(ticks_per_rotation)
+  ticks_per_rotation_(ticks_per_rotation)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
@@ -46,7 +45,7 @@ Channel::Channel(int channel_num, std::string ns, Controller* controller, int ti
   timeout_timer_.stop();
 }
 
-void Channel::cmdCallback(const roboteq_msgs::Command& command)
+void Channel::cmdCallback(const std_msgs::Float64& command)
 {
   // Reset command timeout.
   timeout_timer_.stop();
@@ -55,39 +54,17 @@ void Channel::cmdCallback(const roboteq_msgs::Command& command)
   // Update mode of motor driver. We send this on each command for redundancy against a
   // lost message, and the MBS script keeps track of changes and updates the control
   // constants accordingly.
-  controller_->command << "VAR" << channel_num_ << static_cast<int>(command.mode) << controller_->send;
-  if (command.mode == roboteq_msgs::Command::MODE_STOPPED)
-  {
-    // Get a -1000 .. 1000 command as a proportion of the maximum RPM.
-    int roboteq_velocity = to_rpm(command.setpoint) / max_rpm_ * 1000.0;
-    ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " STOP to motor driver.");
+  int roboteq_velocity = to_rpm(command.data) / max_rpm_ * 1000.0;
 
-  }
-  if (command.mode == roboteq_msgs::Command::MODE_VELOCITY)
-  {
-    // Get a -1000 .. 1000 command as a proportion of the maximum RPM.
-    int roboteq_velocity = to_rpm(command.setpoint) / max_rpm_ * 1000.0;
-   ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " velocity to motor driver.");
-
-    // Write mode and command to the motor driver.
-    controller_->command << "GO" << channel_num_ << roboteq_velocity << controller_->send;
-  }
-  else if (command.mode == roboteq_msgs::Command::MODE_POSITION)
-  {
-    // Convert the commanded position in rads to encoder ticks.
-    int roboteq_position = to_encoder_ticks(command.setpoint);
-    ROS_DEBUG_STREAM("Commanding " << roboteq_position << " position to motor driver.");
-
-    // Write command to the motor driver.
-    controller_->command << "P" << channel_num_ << roboteq_position << controller_->send;
-  }
-  else
-  {
-    ROS_WARN_STREAM("Command received with unknown mode number, dropping.");
+  if(roboteq_velocity > 1000) {
+    roboteq_velocity = 1000;
+  } else if (roboteq_velocity < -1000) {
+    roboteq_velocity = -1000;
   }
 
+  ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " to motor driver.");
+  controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
   controller_->flush();
-  last_mode_ = command.mode;
 }
 
 void Channel::timeoutCallback(const ros::TimerEvent&)
@@ -95,7 +72,7 @@ void Channel::timeoutCallback(const ros::TimerEvent&)
   // Sends stop command repeatedly at 10Hz when not being otherwise commanded. Sending
   // repeatedly is a hedge against a lost serial message.
   ROS_DEBUG("Commanding motor to stop due to user command timeout.");
-  controller_->command << "VAR" << channel_num_ << static_cast<int>(roboteq_msgs::Command::MODE_STOPPED) << controller_->send;
+  controller_->command << "G" << channel_num_ << int(0) << controller_->send;
   controller_->flush();
 }
 

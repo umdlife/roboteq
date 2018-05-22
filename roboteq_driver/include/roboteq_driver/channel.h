@@ -26,6 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define ROBOTEQ_CHANNEL
 
 #include "ros/ros.h"
+#include <std_msgs/Float64.h>
 
 namespace roboteq_msgs {
   ROS_DECLARE_MESSAGE(Command);
@@ -84,7 +85,7 @@ protected:
     return x * (2 * M_PI) / ticks_per_rotation_;
   }
 
-  void cmdCallback(const roboteq_msgs::Command&);
+  void cmdCallback(const std_msgs::Float64&);
   void timeoutCallback(const ros::TimerEvent&);
 
   ros::NodeHandle nh_;
@@ -98,7 +99,6 @@ protected:
   ros::Timer timeout_timer_;
 
   ros::Time last_feedback_time_;
-  uint8_t last_mode_;
 };
 
 }

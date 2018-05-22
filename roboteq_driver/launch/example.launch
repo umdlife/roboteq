@@ -6,9 +6,9 @@
     <rosparam>
       channels:
         - name: left
-          encoder_ticks: 256
+          encoder_ticks: 48
         - name: right
-          encoder_ticks: 256
+          encoder_ticks: 48
     </rosparam>
   </node>
 </launch>
