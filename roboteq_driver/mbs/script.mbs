@@ -1,5 +1,6 @@
-SCRIPT_VER=28
-MAX_CHANNELS=1
+SCRIPT_VER=29
+
+MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
 
 ' Mode values are:
@@ -22,25 +23,25 @@ setconfig(_AMOD, 1, 1) ' Analog input 1 absolute mode
 setconfig(_AMOD, 2, 1) ' Analog input 2 absolute mode
 
 ' Undervoltage/overvoltage limits (p214)
-setconfig(_OVL, 700)
-setconfig(_UVL, 280)
+setconfig(_OVL, 260) ' 22V to 26V
+setconfig(_UVL, 220)
 
 for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	' Encoder, speed config (p208, p221)
-	setconfig(_EMOD, ch, 50)
-	setconfig(_EPPR, ch, 1024)
-	setconfig(_MXRPM, ch, 3500)
-	setconfig(_CLERD, ch, 0)
+	setconfig(_EMOD, ch, 50) ' Encoder mode
+	setconfig(_EPPR, ch, 256) ' PulsePerRotation
+	setconfig(_MXRPM, ch, 3000) ' Maximal Rotation
+	setconfig(_CLERD, ch, 0) ' Closed Loop error detection
 
 	' Current limit (p216)
-	setconfig(_ALIM, ch, 1500)
-	setconfig(_ATGA, ch, 2000)
-	setconfig(_ATGD, ch, 50)
-	setconfig(_ATRIG, ch, 0)
+	setconfig(_ALIM, ch, 1500) ' Motor Amps Limit
+	setconfig(_ATGA, ch, 2000) ' Amps Trigger Action
+	setconfig(_ATGD, ch, 50) ' Amps Trigger Delay
+	setconfig(_ATRIG, ch, 0) ' Amps Trigger Value
 
 	' Max acceleration/deceleration (p219)
-	setconfig(_MAC, ch, 20000)
-	setconfig(_MDEC, ch, 20000)
+	setconfig(_MAC, ch, 20000) ' Motor(s) Desired Acceleration
+	setconfig(_MDEC, ch, 20000) ' Motor(s) Desired Deceleration
 next
 
 top:
