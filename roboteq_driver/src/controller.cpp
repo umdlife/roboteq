@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 // Link to generated source from Microbasic script file.
 extern const char* script_lines[];
@@ -168,7 +169,7 @@ void Controller::processStatus(std::string str) {
       return;
     }
 
-    if (fields.size() != 7) {
+    if (fields.size() != 9) {
       ROS_WARN("Wrong number of status fields. Dropping message.");
       return;
     }
@@ -176,11 +177,17 @@ void Controller::processStatus(std::string str) {
     msg.fault = boost::lexical_cast<int>(fields[2]);
     msg.status = boost::lexical_cast<int>(fields[3]);
     msg.ic_temperature = boost::lexical_cast<int>(fields[6]);
+    msg.max_rpm_motor1 = boost::lexical_cast<int>(fields[7]);
+    msg.max_rpm_motor2 = boost::lexical_cast<int>(fields[8]);
   } catch (std::bad_cast& e) {
     ROS_WARN("Failure parsing status data. Dropping message.");
     return;
   }
 
+  if(channels_.size() >= 1)
+    channels_[0]->setMaxRPM(msg.max_rpm_motor1);
+  if(channels_.size() >= 2)
+    channels_[1]->setMaxRPM(msg.max_rpm_motor2);
   pub_status_.publish(msg);
 }
 

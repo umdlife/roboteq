@@ -41,6 +41,7 @@ class Channel {
 public:
   Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=4096);
   void feedbackCallback(std::vector<std::string>);
+  void setMaxRPM(int rpm);
 
 protected:
   /**

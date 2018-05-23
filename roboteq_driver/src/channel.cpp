@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace roboteq {
 
 Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation) :
-  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3500),
+  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000),
   ticks_per_rotation_(ticks_per_rotation)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
@@ -74,6 +74,10 @@ void Channel::timeoutCallback(const ros::TimerEvent&)
   ROS_DEBUG("Commanding motor to stop due to user command timeout.");
   controller_->command << "G" << channel_num_ << int(0) << controller_->send;
   controller_->flush();
+}
+
+void Channel::setMaxRPM(int rpm) {
+  if(rpm > 0) max_rpm_ = float(rpm);
 }
 
 void Channel::feedbackCallback(std::vector<std::string> fields)

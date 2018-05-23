@@ -90,5 +90,7 @@ PrintStatus:
 	print(":", getvalue(_VOLTS, 1))
 	print(":", getvalue(_VOLTS, 3))
 	print(":", getvalue(_TEMP, 1))
+	print(":", getconfig(_MXRPM, 1))
+	print(":", getconfig(_MXRPM, 2))
 	print("\r")
 	Return
