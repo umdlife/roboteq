@@ -61,25 +61,20 @@ top:
 
 	' Send status messages for the controller at 5Hz.
 	c++
-	if c = 5 then
+	if c = 10 then
 		GoSub PrintStatus
 		c = 0
 	end if
 
-	wait(19)
-	goto top
+	wait(9)
+	goto tpo
 
 PrintFeedback:
 	print("&f:", ch)
-	print(":", getvalue(_MOTAMPS, ch))
 	print(":", getvalue(_MOTCMD, ch))
 	print(":", getvalue(_MOTPWR, ch))
 	print(":", getvalue(_BLSPEED, ch))
 	print(":", getvalue(_BLCNTR, ch))
-	print(":", getvalue(_VOLTS, 2))
-	print(":", getvalue(_BATAMPS, ch))
-	print(":", getvalue(_ANAIN, ch))
-	print(":", getvalue(_TEMP, ch+1))
 	print("\r")
 	Return
 	
@@ -87,8 +82,11 @@ PrintStatus:
 	print("&s:", SCRIPT_VER)
 	print(":", getvalue(_FLTFLAG))
 	print(":", getvalue(_STFLAG))
-	print(":", getvalue(_VOLTS, 1))
-	print(":", getvalue(_VOLTS, 3))
+	print(":", getvalue(_VOLTS, 2))
 	print(":", getvalue(_TEMP, 1))
+	print(":", getconfig(_MXRPM, 1))
+	print(":", getconfig(_MXRPM, 2))
+	print(":", getvalue(_BATAMPS, 1))
+	print(":", getvalue(_BATAMPS, 2))
 	print("\r")
 	Return
