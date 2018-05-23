@@ -67,7 +67,7 @@ top:
 	end if
 
 	wait(9)
-	goto tpo
+	goto top
 
 PrintFeedback:
 	print("&f:", ch)
