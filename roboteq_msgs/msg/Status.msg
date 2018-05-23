@@ -24,8 +24,10 @@ uint8 status
 float32 ic_temperature
 
 # Internal supply and reference voltage (V)
-float32 internal_voltage
-float32 adc_voltage
+float32 battery_voltage
 
 int32 max_rpm_motor1
 int32 max_rpm_motor2
+
+float32 bat_current_1
+float32 bat_current_2

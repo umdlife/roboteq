@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string>
 #include <iostream>
 
+#include <xmlrpcpp/XmlRpcException.h>
 
 int main(int argc, char **argv) {
   ros::init(argc, argv, "roboteq_usb_driver");
@@ -53,7 +54,8 @@ int main(int argc, char **argv) {
     ROS_ASSERT(channel_namespaces.getType() == XmlRpc::XmlRpcValue::TypeArray);
     for (int i = 0; i < channel_namespaces.size(); ++i) 
     {
-      int encoder_ticks = 4096;
+      int encoder_ticks = 24;
+      double gearbox_divider = 1;
       std::ostringstream ss;
       // Handle string only = name with 4096 ticks/rotation
       if (channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeString) {
@@ -62,21 +64,34 @@ int main(int argc, char **argv) {
 
       // Handle dict with optional encoder_ticks
       else if(channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeStruct) {
-        // set encoder ticks with default of 4096 ticks per rotation
-        if (channel_namespaces[i].hasMember("encoder_ticks")) {
-          if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeInt)
-            encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
-          else if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
-            encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
-        }
-        // set name which has to be a string. Else: MotorID
-        if (channel_namespaces[i].hasMember("name")) {
-          if (channel_namespaces[i]["name"].getType() == XmlRpc::XmlRpcValue::TypeString)
-            ss << channel_namespaces[i]["name"];
-          else {
-            ss << "motor" <<  (i+1);
-            ROS_ERROR_STREAM("Channel array using Dict requires a name for the controller; default to motor" << i+1);
+        try {
+          // set encoder ticks with default of 4096 ticks per rotation
+          if (channel_namespaces[i].hasMember("encoder_ticks")) {
+            if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeInt)
+              encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
+            else if (channel_namespaces[i]["encoder_ticks"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
+              encoder_ticks = int(channel_namespaces[i]["encoder_ticks"]);
           }
+          // set gearbox divider; default is 9
+          if (channel_namespaces[i].hasMember("gearbox_divider")) {
+            if (channel_namespaces[i]["gearbox_divider"].getType() == XmlRpc::XmlRpcValue::TypeInt)
+              gearbox_divider = double(int(channel_namespaces[i]["gearbox_divider"]));
+            else if (channel_namespaces[i]["gearbox_divider"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
+              gearbox_divider = double(channel_namespaces[i]["gearbox_divider"]);
+          }
+
+          // set name which has to be a string. Else: MotorID
+          if (channel_namespaces[i].hasMember("name")) {
+            if (channel_namespaces[i]["name"].getType() == XmlRpc::XmlRpcValue::TypeString)
+              ss << channel_namespaces[i]["name"];
+            else {
+              ss << "motor" <<  (i+1);
+              ROS_ERROR_STREAM("Channel array using Dict requires a name for the controller; default to motor" << i+1);
+            }
+          }
+        }
+        catch(XmlRpc::XmlRpcException e) {
+          ROS_FATAL_STREAM(e.getMessage());
         }
         
       } else {
@@ -84,7 +99,7 @@ int main(int argc, char **argv) {
         ROS_ERROR_STREAM("Channel array has to be either a dict or a string. default to motor" << i+1);
       }
       ROS_DEBUG_STREAM("Setting channel " << ss.str() << " with encoders: " << encoder_ticks);
-      controller.addChannel(new roboteq::Channel(1 + i, ss.str(), &controller, encoder_ticks));
+      controller.addChannel(new roboteq::Channel(1 + i, ss.str(), &controller, encoder_ticks, gearbox_divider));
     }
   } else {
     // Default configuration is a single channel in the node's namespace.
@@ -92,12 +107,12 @@ int main(int argc, char **argv) {
     controller.addChannel(new roboteq::Channel(1, "motor1", &controller));
   } 
 
+  ros::AsyncSpinner spinner(1);
   // Attempt to connect and run.
   while (ros::ok()) {
     ROS_DEBUG("Attempting connection to %s at %i baud.", port.c_str(), baud);
     controller.connect();
     if (controller.connected()) {
-      ros::AsyncSpinner spinner(1);
       spinner.start();
       while (controller.connected()) { // Try to reconnect on disconnection
         controller.spinOnce();
@@ -107,8 +122,10 @@ int main(int argc, char **argv) {
       ROS_DEBUG("Problem connecting to serial device.");
       ROS_ERROR_STREAM_ONCE("Problem connecting to port " << port << ". Trying again every 1 second.");
       sleep(1);
-    }  
+    }
   }
+  spinner.stop();
+  ros::waitForShutdown();
 
   return 0;
 }

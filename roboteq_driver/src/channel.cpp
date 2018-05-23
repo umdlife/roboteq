@@ -32,9 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace roboteq {
 
-Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation) :
+Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider) :
   channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000),
-  ticks_per_rotation_(ticks_per_rotation)
+  ticks_per_rotation_(ticks_per_rotation), gearbox_divider_(gearbox_divider)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
@@ -89,15 +89,10 @@ void Channel::feedbackCallback(std::vector<std::string> fields)
   // see mbs/script.mbs for URL and specific page references.
   try
   {
-    msg.motor_current = boost::lexical_cast<float>(fields[2]) / 10;
-    msg.commanded_velocity = from_rpm(boost::lexical_cast<double>(fields[3]));
-    msg.motor_power = boost::lexical_cast<float>(fields[4]) / 1000.0;
-    msg.measured_velocity = from_rpm(boost::lexical_cast<double>(fields[5]));
-    msg.measured_position = from_encoder_ticks(boost::lexical_cast<double>(fields[6]));
-    msg.supply_voltage = boost::lexical_cast<float>(fields[7]) / 10.0;
-    msg.supply_current = boost::lexical_cast<float>(fields[8]) / 10.0;
-    msg.motor_temperature = boost::lexical_cast<int>(fields[9]) * 0.020153 - 4.1754;
-    msg.channel_temperature = boost::lexical_cast<int>(fields[10]);
+    msg.cmd_user = from_rpm(boost::lexical_cast<double>(fields[2]));
+    msg.cmd_motor = boost::lexical_cast<float>(fields[3]) / 1000.0;
+    msg.measured_vel = from_rpm(boost::lexical_cast<double>(fields[4]));
+    msg.measured_pos = from_encoder_ticks(boost::lexical_cast<double>(fields[5]));
   }
   catch (std::bad_cast& e)
   {

@@ -39,7 +39,7 @@ class Controller;
 
 class Channel {
 public:
-  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=4096);
+  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=24, double gearbox_divider=1);
   void feedbackCallback(std::vector<std::string>);
   void setMaxRPM(int rpm);
 
@@ -48,42 +48,42 @@ protected:
    * @param x Angular velocity in radians/s.
    * @return Angular velocity in RPM.
    */
-  static double to_rpm(double x)
+  double to_rpm(double x)
   {
-    return x * 60 / (2 * M_PI);
+    return x * 60 / (2 * M_PI) * gearbox_divider_;
   }
 
   /**
    * @param x Angular velocity in RPM.
    * @return Angular velocity in rad/s.
    */
-  static double from_rpm(double x)
+  double from_rpm(double x)
   {
-    return x * (2 * M_PI) / 60;
+    return x * (2 * M_PI) / 60 / gearbox_divider_;
   }
 
   /**
-   * Conversion of radians to encoder ticks. Default is assumess a
-   * 1024-line quadrature encoder (hence 4096).
+   * Conversion of radians to hall sensors ticks. Default is assumess 3
+   * hall sensors and 8 poles, hence 24.
    *
    * @param x Angular position in radians.
-   * @return Angular position in encoder ticks.
+   * @return Angular position in hall sensor ticks.
    */
   double to_encoder_ticks(double x)
   {
-    return x * ticks_per_rotation_ / (2 * M_PI);
+    return x * ticks_per_rotation_ / (2 * M_PI) * gearbox_divider_;
   }
 
   /**
-   * Conversion of encoder ticks to radians. Default is assumess a
-   * 1024-line quadrature encoder (hence 4096).
+   * Conversion of hall sensors ticks to radians. Default is assumess 3
+   * hall sensors and 8 poles, hence 24.
    *
-   * @param x Angular position in encoder ticks.
+   * @param x Angular position in hall sensor ticks.
    * @return Angular position in radians.
    */
   double from_encoder_ticks(double x)
   {
-    return x * (2 * M_PI) / ticks_per_rotation_;
+    return x * (2 * M_PI) / ticks_per_rotation_ / gearbox_divider_;
   }
 
   void cmdCallback(const std_msgs::Float64&);
@@ -94,6 +94,7 @@ protected:
   int channel_num_;
   float max_rpm_;
   int ticks_per_rotation_;
+  double gearbox_divider_;
 
   ros::Subscriber sub_cmd_;
   ros::Publisher pub_feedback_;

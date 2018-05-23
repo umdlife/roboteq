@@ -169,16 +169,20 @@ void Controller::processStatus(std::string str) {
       return;
     }
 
-    if (fields.size() != 9) {
+    if (fields.size() != 10) {
       ROS_WARN("Wrong number of status fields. Dropping message.");
       return;
     }
 
     msg.fault = boost::lexical_cast<int>(fields[2]);
     msg.status = boost::lexical_cast<int>(fields[3]);
-    msg.ic_temperature = boost::lexical_cast<int>(fields[6]);
-    msg.max_rpm_motor1 = boost::lexical_cast<int>(fields[7]);
-    msg.max_rpm_motor2 = boost::lexical_cast<int>(fields[8]);
+    msg.battery_voltage = boost::lexical_cast<int>(fields[4]);
+    msg.ic_temperature = boost::lexical_cast<int>(fields[5]);
+    msg.max_rpm_motor1 = boost::lexical_cast<int>(fields[6]);
+    msg.max_rpm_motor2 = boost::lexical_cast<int>(fields[7]);
+    msg.bat_current_1 = boost::lexical_cast<double>(fields[8])/10;
+    msg.bat_current_2 = boost::lexical_cast<double>(fields[9])/10;
+
   } catch (std::bad_cast& e) {
     ROS_WARN("Failure parsing status data. Dropping message.");
     return;
@@ -194,7 +198,7 @@ void Controller::processStatus(std::string str) {
 void Controller::processFeedback(std::string msg) {
   std::vector<std::string> fields;
   boost::split(fields, msg, boost::algorithm::is_any_of(":"));
-  if (fields.size() != 11) {
+  if (fields.size() != 6) {
     ROS_WARN("Wrong number of feedback fields. Dropping message.");
     return;
   }
