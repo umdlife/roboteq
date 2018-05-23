@@ -26,6 +26,62 @@ The configuration is given as:
 
 The maximal RPM is read from the motor and used inside the script.
 
+The motor speed is set by sending the **rad/s** as `std_msgs/Float64` to `~/namespace/cmd`
+
+```bash
+rostopic pub /left/cmd std_msgs/Float64 "data: 30.0" -r 10
+```
+
+You receive the feedback as `roboteq_msgs/Feedback` at `~/namespace/feedback`
+
+```python
+Header header
+float32 cmd_user     # Rad/s command 
+float32 cmd_motor    # % of the motor power used (0.7 is 70%)
+float32 measured_vel # Rad/s speed
+float32 measured_pos # Total radians rotated
+```
+
+You receive the status as `roboteq_msgs/Status` at `~/status`
+
+```python
+Header header
+
+uint8 FAULT_OVERHEAT=1
+uint8 FAULT_OVERVOLTAGE=2
+uint8 FAULT_UNDERVOLTAGE=4
+uint8 FAULT_SHORT_CIRCUIT=8
+uint8 FAULT_EMERGENCY_STOP=16
+uint8 FAULT_SEPEX_EXCITATION_FAULT=32
+uint8 FAULT_MOSFET_FAILURE=64
+uint8 FAULT_STARTUP_CONFIG_FAULT=128
+uint8 fault
+
+uint8 STATUS_SERIAL_MODE=1
+uint8 STATUS_PULSE_MODE=2
+uint8 STATUS_ANALOG_MODE=4
+uint8 STATUS_POWER_STAGE_OFF=8
+uint8 STATUS_STALL_DETECTED=16
+uint8 STATUS_AT_LIMIT=32
+uint8 STATUS_MICROBASIC_SCRIPT_RUNNING=128
+uint8 status
+
+# Temperature of main logic chip (C)
+float32 ic_temperature
+
+# Internal supply and reference voltage (V)
+float32 battery_voltage
+
+# Max RPM of the motors
+int32 max_rpm_motor1
+int32 max_rpm_motor2
+
+# Battery current sensed
+float32 bat_current_1
+float32 bat_current_2
+```
+
+
 ### Specs
 
 * Feedback frequency: 111Hz
