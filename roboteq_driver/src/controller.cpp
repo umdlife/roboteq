@@ -4,7 +4,9 @@ Software License Agreement (BSD)
 \file      controller.cpp
 \authors   Mike Purvis <mpurvis@clearpathrobotics.com>
            Mike Irvine <mirvine@clearpathrobotics.com>
+           Alexis Paques <alexis.paques@gmail.com>
 \copyright Copyright (c) 2013, Clearpath Robotics, Inc., All rights reserved.
+\copyright Copyright (c) 2015, Unmanned System Ltd., All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the
 following conditions are met:
