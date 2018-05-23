@@ -50,8 +50,8 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 next
 
 ' Undervoltage/overvoltage limits (p214)
-setconfig(_OVL, 260) ' 22V to 26V
-setconfig(_UVL, 220) 
+setconfig(_OVL, 290) ' 22V to 26V
+setconfig(_UVL, 200) 
 
 top:
 	for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
