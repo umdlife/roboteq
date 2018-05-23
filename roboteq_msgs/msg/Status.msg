@@ -26,3 +26,6 @@ float32 ic_temperature
 # Internal supply and reference voltage (V)
 float32 internal_voltage
 float32 adc_voltage
+
+int32 max_rpm_motor1
+int32 max_rpm_motor2
