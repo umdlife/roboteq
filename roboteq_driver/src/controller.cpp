@@ -49,7 +49,7 @@ const std::string eol("\r");
 const size_t max_line_length(128);
 
 Controller::Controller(const char *port, int baud)
-  : nh_("~"), port_(port), baud_(baud), connected_(false), receiving_script_messages_(false),
+  : nh_(""), port_(port), baud_(baud), connected_(false), receiving_script_messages_(false),
     version_(""), start_script_attempts_(0), serial_(NULL),
     command("!", this), query("?", this), param("^", this)
 {
