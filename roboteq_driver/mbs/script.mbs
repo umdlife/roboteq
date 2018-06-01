@@ -1,4 +1,4 @@
-SCRIPT_VER=4
+SCRIPT_VER=5
 
 MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
@@ -32,8 +32,8 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	setconfig(_CLERD, ch, 0) ' Closed Loop error detection
 
 	' Max acceleration/deceleration (p219)
-	setconfig(_MAC, ch, 10000) ' Motor(s) Desired Acceleration
-	setconfig(_MDEC, ch, 20000) ' Motor(s) Desired Deceleration
+	setconfig(_MAC, ch, 7500) ' Motor(s) Desired Acceleration
+	setconfig(_MDEC, ch, 15000) ' Motor(s) Desired Deceleration
 
 	' PID Config and Closed velocity control loop
 	setconfig(_MMOD, ch, 1)
