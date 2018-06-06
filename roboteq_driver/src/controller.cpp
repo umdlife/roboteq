@@ -178,7 +178,7 @@ void Controller::processStatus(std::string str) {
 
     msg.fault = boost::lexical_cast<int>(fields[2]);
     msg.status = boost::lexical_cast<int>(fields[3]);
-    msg.battery_voltage = boost::lexical_cast<int>(fields[4]);
+    msg.battery_voltage = float(boost::lexical_cast<int>(fields[4]))/10.0;
     msg.ic_temperature = boost::lexical_cast<int>(fields[5]);
     msg.max_rpm_motor1 = boost::lexical_cast<int>(fields[6]);
     msg.max_rpm_motor2 = boost::lexical_cast<int>(fields[7]);
