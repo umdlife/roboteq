@@ -5,10 +5,10 @@
     <param name="baud" value="115200" />
     <rosparam>
       channels:
-        - name: left
+        - name: right
           encoder_ticks: 24
           gearbox_divider: 9
-        - name: right
+        - name: left
           encoder_ticks: 24
           gearbox_divider: 9
     </rosparam>
