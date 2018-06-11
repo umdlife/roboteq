@@ -34,11 +34,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace roboteq {
 
-Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider) :
-  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000),
+Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider, float max_acceleration, float max_decceleration) :
+  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_decceleration_(max_decceleration), 
   ticks_per_rotation_(ticks_per_rotation), gearbox_divider_(gearbox_divider)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
+  sub_cmd_acc_ = nh_.subscribe("cmd_acc", 1, &Channel::cmdCallbackAcc, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
 
   // Don't start this timer until we've received the first motion command, otherwise it
@@ -66,6 +67,35 @@ void Channel::cmdCallback(const std_msgs::Float64& command)
 
   ROS_DEBUG_STREAM("Commanding " << roboteq_velocity << " to motor driver.");
   controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
+  controller_->flush();
+}
+
+void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& command)
+{
+  // Reset command timeout.
+  timeout_timer_.stop();
+  timeout_timer_.start();
+
+  // Update mode of motor driver. We send this on each command for redundancy against a
+  // lost message, and the MBS script keeps track of changes and updates the control
+  // constants accordingly.
+
+  int roboteq_velocity  = to_rpm(command.cmd) / max_rpm_ * 1000.0;
+  int max_acceleration  = command.max_acceleration * max_acceleration_;
+  int max_decceleration = command.max_decceleration * max_acceleration_;
+  if (max_acceleration <= 0) max_acceleration = max_acceleration_;
+  if (max_decceleration <= 0) max_decceleration = max_decceleration_;
+
+  if(roboteq_velocity > 1000) {
+    roboteq_velocity = 1000;
+  } else if (roboteq_velocity < -1000) {
+    roboteq_velocity = -1000;
+  }
+
+  ROS_DEBUG_STREAM("Speed: " << roboteq_velocity << " AC: " << max_acceleration << " DC: " << max_decceleration << " to motor driver.");
+  controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
+  controller_->command << "AC" << channel_num_ << max_acceleration << controller_->send;
+  controller_->command << "DC" << channel_num_ << max_decceleration << controller_->send;
   controller_->flush();
 }
 

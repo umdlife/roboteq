@@ -8,6 +8,7 @@ add_message_files(
   FILES
   Feedback.msg
   Status.msg
+  SpeedAccelerationCommand.msg
 )
 
 # Generate added messages and services with any dependencies listed here

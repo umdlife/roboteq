@@ -29,9 +29,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "ros/ros.h"
 #include <std_msgs/Float64.h>
+#include "roboteq_msgs/SpeedAccelerationCommand.h"
 
 namespace roboteq_msgs {
-  ROS_DECLARE_MESSAGE(Command);
+  ROS_DECLARE_MESSAGE(SpeedAccelerationCommand);
   ROS_DECLARE_MESSAGE(Feedback);
 }
 
@@ -41,7 +42,7 @@ class Controller;
 
 class Channel {
 public:
-  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=24, double gearbox_divider=1);
+  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=24, double gearbox_divider=9, float max_acceleration=7500, float max_decceleration=15000);
   void feedbackCallback(std::vector<std::string>);
   void setMaxRPM(int rpm);
 
@@ -89,16 +90,20 @@ protected:
   }
 
   void cmdCallback(const std_msgs::Float64&);
+  void cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand&);
   void timeoutCallback(const ros::TimerEvent&);
 
   ros::NodeHandle nh_;
   boost::shared_ptr<Controller> controller_;
   int channel_num_;
   float max_rpm_;
+  float max_acceleration_;
+  float max_decceleration_;
   int ticks_per_rotation_;
   double gearbox_divider_;
 
   ros::Subscriber sub_cmd_;
+  ros::Subscriber sub_cmd_acc_;
   ros::Publisher pub_feedback_;
   ros::Timer timeout_timer_;
 
