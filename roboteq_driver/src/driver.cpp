@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
       int encoder_ticks = 24;
       double gearbox_divider = 9;
       double max_acceleration = 7500;
-      double max_decceleration = 15000;
+      double max_deceleration = 15000;
       std::ostringstream ss;
       // Handle string only = name with 4096 ticks/rotation
       if (channel_namespaces[i].getType() == XmlRpc::XmlRpcValue::TypeString) {
@@ -101,11 +101,11 @@ int main(int argc, char **argv) {
           }
 
           // set gearbox divider; default is 9
-          if (channel_namespaces[i].hasMember("max_decceleration")) {
-            if (channel_namespaces[i]["max_decceleration"].getType() == XmlRpc::XmlRpcValue::TypeInt)
-              max_decceleration = double(int(channel_namespaces[i]["max_decceleration"]));
-            else if (channel_namespaces[i]["max_decceleration"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
-              max_decceleration = double(channel_namespaces[i]["max_decceleration"]);
+          if (channel_namespaces[i].hasMember("max_deceleration")) {
+            if (channel_namespaces[i]["max_deceleration"].getType() == XmlRpc::XmlRpcValue::TypeInt)
+              max_deceleration = double(int(channel_namespaces[i]["max_deceleration"]));
+            else if (channel_namespaces[i]["max_deceleration"].getType() == XmlRpc::XmlRpcValue::TypeDouble)
+              max_deceleration = double(channel_namespaces[i]["max_deceleration"]);
           }
 
           // set name which has to be a string. Else: MotorID
@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
         ROS_ERROR_STREAM("Channel array has to be either a dict or a string. default to motor" << i+1);
       }
       ROS_DEBUG_STREAM("Setting channel " << ss.str() << " with encoders: " << encoder_ticks);
-      controller.addChannel(new roboteq::Channel(1 + i, ss.str(), &controller, encoder_ticks, gearbox_divider, max_acceleration, max_decceleration));
+      controller.addChannel(new roboteq::Channel(1 + i, ss.str(), &controller, encoder_ticks, gearbox_divider, max_acceleration, max_deceleration));
     }
   } else {
     // Default configuration is a single channel in the node's namespace.

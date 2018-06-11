@@ -34,8 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace roboteq {
 
-Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider, float max_acceleration, float max_decceleration) :
-  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_decceleration_(max_decceleration), 
+Channel::Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation, double gearbox_divider, float max_acceleration, float max_deceleration) :
+  channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_deceleration_(max_deceleration), 
   ticks_per_rotation_(ticks_per_rotation), gearbox_divider_(gearbox_divider)
 {
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
@@ -82,9 +82,9 @@ void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& comma
 
   int roboteq_velocity  = to_rpm(command.cmd) / max_rpm_ * 1000.0;
   int max_acceleration  = command.max_acceleration * max_acceleration_;
-  int max_decceleration = command.max_decceleration * max_acceleration_;
+  int max_deceleration = command.max_deceleration * max_acceleration_;
   if (max_acceleration <= 0) max_acceleration = max_acceleration_;
-  if (max_decceleration <= 0) max_decceleration = max_decceleration_;
+  if (max_deceleration <= 0) max_deceleration = max_deceleration_;
 
   if(roboteq_velocity > 1000) {
     roboteq_velocity = 1000;
@@ -92,10 +92,10 @@ void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& comma
     roboteq_velocity = -1000;
   }
 
-  ROS_DEBUG_STREAM("Speed: " << roboteq_velocity << " AC: " << max_acceleration << " DC: " << max_decceleration << " to motor driver.");
+  ROS_DEBUG_STREAM("Speed: " << roboteq_velocity << " AC: " << max_acceleration << " DC: " << max_deceleration << " to motor driver.");
   controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
   controller_->command << "AC" << channel_num_ << max_acceleration << controller_->send;
-  controller_->command << "DC" << channel_num_ << max_decceleration << controller_->send;
+  controller_->command << "DC" << channel_num_ << max_deceleration << controller_->send;
   controller_->flush();
 }
 

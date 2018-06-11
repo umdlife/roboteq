@@ -42,7 +42,7 @@ class Controller;
 
 class Channel {
 public:
-  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=24, double gearbox_divider=9, float max_acceleration=7500, float max_decceleration=15000);
+  Channel(int channel_num, std::string ns, Controller* controller, int ticks_per_rotation=24, double gearbox_divider=9, float max_acceleration=7500, float max_deceleration=15000);
   void feedbackCallback(std::vector<std::string>);
   void setMaxRPM(int rpm);
 
@@ -98,7 +98,7 @@ protected:
   int channel_num_;
   float max_rpm_;
   float max_acceleration_;
-  float max_decceleration_;
+  float max_deceleration_;
   int ticks_per_rotation_;
   double gearbox_divider_;
 

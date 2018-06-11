@@ -4,4 +4,4 @@
 # If the command is: left 500, right 1000, max_acceleration will be 
 float64 cmd
 float64 max_acceleration
-float64 max_decceleration
+float64 max_deceleration
