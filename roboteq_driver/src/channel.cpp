@@ -82,8 +82,8 @@ void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& comma
 
   int roboteq_velocity  = to_rpm(command.cmd) / max_rpm_ * 1000.0;
   int max_acceleration  = command.max_acceleration * max_acceleration_;
-  int max_deceleration = command.max_deceleration * max_acceleration_;
   if (max_acceleration <= 0) max_acceleration = max_acceleration_;
+  int max_deceleration = command.max_deceleration * max_deceleration_;
   if (max_deceleration <= 0) max_deceleration = max_deceleration_;
 
   if(roboteq_velocity > 1000) {
