@@ -8,13 +8,13 @@
         - name: right
           encoder_ticks: 24
           gearbox_divider: 9
-          max_acceleration: 7500
-          max_deceleration: 15000
+          max_acceleration: 12500
+          max_deceleration: 12500
         - name: left
           encoder_ticks: 24
           gearbox_divider: 9
-          max_acceleration: 7500
-          max_deceleration: 15000
+          max_acceleration: 12500
+          max_deceleration: 12500
     </rosparam>
   </node>
 </launch>
