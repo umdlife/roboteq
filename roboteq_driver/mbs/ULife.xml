@@ -992,18 +992,18 @@
           </Node>
           <Node Text="Voltage Limits">
             <Nodes>
-              <Node Text="Over Voltage Limit (V)" Value="290">
+              <Node Text="Over Voltage Limit (V)" Value="400">
                 <Nodes />
               </Node>
               <Node Text="Over Voltage Hysteresis (V)" Value="50">
                 <Nodes />
               </Node>
-              <Node Text="Under Voltage Limit (V)" Value="200">
+              <Node Text="Under Voltage Limit (V)" Value="150">
                 <Nodes />
               </Node>
             </Nodes>
           </Node>
-          <Node Text="Short Circuit Protection" Value="1">
+          <Node Text="Short Circuit Protection" Value="2">
             <Nodes />
           </Node>
           <Node Text="Over Temperature Limit" Value="80">
@@ -1159,7 +1159,7 @@
             <Nodes>
               <Node Text="Amps Limits">
                 <Nodes>
-                  <Node Text="Amps Limit (A)" Value="120">
+                  <Node Text="Amps Limit (A)" Value="300">
                     <Nodes />
                   </Node>
                   <Node Text="Amps Trigger (A)" Value="250">
@@ -1191,13 +1191,13 @@
                   <Node Text="Min Speed (RPM)" Value="0">
                     <Nodes />
                   </Node>
-                  <Node Text="Acceleration (RPM/s)" Value="7500">
+                  <Node Text="Acceleration (RPM/s)" Value="17500">
                     <Nodes />
                   </Node>
-                  <Node Text="Decceleration (RPM/s)" Value="15000">
+                  <Node Text="Decceleration (RPM/s)" Value="17500">
                     <Nodes />
                   </Node>
-                  <Node Text="Emergency Decceleration (RPM/s)" Value="20000">
+                  <Node Text="Emergency Decceleration (RPM/s)" Value="25000">
                     <Nodes />
                   </Node>
                 </Nodes>
@@ -1373,7 +1373,7 @@
             <Nodes>
               <Node Text="Amps Limits">
                 <Nodes>
-                  <Node Text="Amps Limit (A)" Value="120">
+                  <Node Text="Amps Limit (A)" Value="300">
                     <Nodes />
                   </Node>
                   <Node Text="Amps Trigger (A)" Value="250">

@@ -1,3 +1,4 @@
+
 SCRIPT_VER=5
 
 MAX_CHANNELS=2 ' Two channels
@@ -32,8 +33,8 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	setconfig(_CLERD, ch, 0) ' Closed Loop error detection
 
 	' Max acceleration/deceleration (p219)
-	setconfig(_MAC, ch, 7500) ' Motor(s) Desired Acceleration
-	setconfig(_MDEC, ch, 15000) ' Motor(s) Desired Deceleration
+	setconfig(_MAC, ch, 17500) ' Motor(s) Desired Acceleration
+	setconfig(_MDEC, ch, 17500) ' Motor(s) Desired Deceleration
 
 	' PID Config and Closed velocity control loop
 	setconfig(_MMOD, ch, 1)
@@ -45,13 +46,13 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	' Current limit (p216)
 	setconfig(_ALIM, ch, 300) ' Motor Amps Limit
 	setconfig(_ATGA, ch, 0) ' Amps Trigger Action
-	setconfig(_ATGD, ch, 200) ' Amps Trigger Delay
+	setconfig(_ATGD, ch, 500) ' Amps Trigger Delay
 	setconfig(_ATRIG, ch, 110) ' Amps Trigger Value
 next
 
 ' Undervoltage/overvoltage limits (p214)
-setconfig(_OVL, 290) ' 22V to 26V
-setconfig(_UVL, 200) 
+setconfig(_OVL, 400) ' 22V to 26V
+setconfig(_UVL, 150) 
 
 top:
 	for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
