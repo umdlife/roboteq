@@ -1,5 +1,4 @@
-
-SCRIPT_VER=5
+SCRIPT_VER=6
 
 MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
@@ -38,9 +37,6 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 
 	' PID Config and Closed velocity control loop
 	setconfig(_MMOD, ch, 1)
-	setconfig(_KP, ch, 0)
-	setconfig(_KI, ch, 2)
-	setconfig(_KD, ch, 0)
 	setconfig(_ICAP, ch, 100)
 
 	' Current limit (p216)
