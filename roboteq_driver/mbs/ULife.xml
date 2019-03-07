@@ -1213,10 +1213,10 @@
                   <Node Text="Position Turns Min to Max" Value="10000">
                     <Nodes />
                   </Node>
-                  <Node Text="Proportional Gain" Value="0">
+                  <Node Text="Proportional Gain" Value="1">
                     <Nodes />
                   </Node>
-                  <Node Text="Integral Gain" Value="20">
+                  <Node Text="Integral Gain" Value="2">
                     <Nodes />
                   </Node>
                   <Node Text="Differential Gain" Value="0">
@@ -1427,10 +1427,10 @@
                   <Node Text="Position Turns Min to Max" Value="10000">
                     <Nodes />
                   </Node>
-                  <Node Text="Proportional Gain" Value="0">
+                  <Node Text="Proportional Gain" Value="1">
                     <Nodes />
                   </Node>
-                  <Node Text="Integral Gain" Value="20">
+                  <Node Text="Integral Gain" Value="2">
                     <Nodes />
                   </Node>
                   <Node Text="Differential Gain" Value="0">
