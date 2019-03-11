@@ -1,4 +1,4 @@
-SCRIPT_VER=6
+SCRIPT_VER=7
 
 MAX_CHANNELS=2 ' Two channels
 Dim last_mode[2] as Integer
@@ -40,10 +40,10 @@ for ch = 1 andwhile ch <= MAX_CHANNELS evaluate ch++
 	setconfig(_ICAP, ch, 100)
 
 	' Current limit (p216)
-	setconfig(_ALIM, ch, 300) ' Motor Amps Limit
-	setconfig(_ATGA, ch, 0) ' Amps Trigger Action
-	setconfig(_ATGD, ch, 500) ' Amps Trigger Delay
-	setconfig(_ATRIG, ch, 110) ' Amps Trigger Value
+	setconfig(_ALIM, ch, 300) ' Motor Amps Limit (30A)
+	setconfig(_ATGA, ch, 1) ' Amps Trigger Action (Safety Stop)
+	setconfig(_ATGD, ch, 500) ' Amps Trigger Delay (0.5s)
+	setconfig(_ATRIG, ch, 110) ' Amps Trigger Value (11A)
 next
 
 ' Undervoltage/overvoltage limits (p214)
