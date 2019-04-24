@@ -101,6 +101,8 @@ protected:
   float max_deceleration_;
   int ticks_per_rotation_;
   double gearbox_divider_;
+  int last_acceleration;
+  int last_deceleration;
 
   ros::Subscriber sub_cmd_;
   ros::Subscriber sub_cmd_acc_;

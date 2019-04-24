@@ -38,6 +38,8 @@ Channel::Channel(int channel_num, std::string ns, Controller* controller, int ti
   channel_num_(channel_num), nh_(ns), controller_(controller), max_rpm_(3000), max_acceleration_(max_acceleration), max_deceleration_(max_deceleration), 
   ticks_per_rotation_(ticks_per_rotation), gearbox_divider_(gearbox_divider)
 {
+  last_acceleration = 0;
+  last_deceleration = 0;
   sub_cmd_ = nh_.subscribe("cmd", 1, &Channel::cmdCallback, this);
   sub_cmd_acc_ = nh_.subscribe("cmd_acc", 1, &Channel::cmdCallbackAcc, this);
   pub_feedback_ = nh_.advertise<roboteq_msgs::Feedback>("feedback", 1);
@@ -80,6 +82,8 @@ void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& comma
   // lost message, and the MBS script keeps track of changes and updates the control
   // constants accordingly.
 
+  // The command.max_ac[de]celeration is a float from 0 to 2.0;
+  // max_ac[de]celeration are ints in RPM/s*10
   int roboteq_velocity  = to_rpm(command.cmd) / max_rpm_ * 1000.0;
   int max_acceleration  = command.max_acceleration * max_acceleration_;
   if (max_acceleration <= 0) max_acceleration = max_acceleration_;
@@ -94,8 +98,14 @@ void Channel::cmdCallbackAcc(const roboteq_msgs::SpeedAccelerationCommand& comma
 
   ROS_DEBUG_STREAM("Speed: " << roboteq_velocity << " AC: " << max_acceleration << " DC: " << max_deceleration << " to motor driver.");
   controller_->command << "G" << channel_num_ << roboteq_velocity << controller_->send;
-  controller_->command << "AC" << channel_num_ << max_acceleration << controller_->send;
-  controller_->command << "DC" << channel_num_ << max_deceleration << controller_->send;
+  if(max_acceleration != last_acceleration) {
+    controller_->command << "AC" << channel_num_ << max_acceleration << controller_->send;
+    last_acceleration = max_acceleration;
+  }
+  if(max_deceleration != last_deceleration) {
+    controller_->command << "DC" << channel_num_ << max_deceleration << controller_->send;
+    last_deceleration = max_deceleration;
+  }
   controller_->flush();
 }
 
